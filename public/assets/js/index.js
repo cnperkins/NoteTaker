@@ -21,7 +21,10 @@ const saveNote = (note) => {
     url: "/api/notes",
     data: note,
     method: "POST",
-  });
+  }).done(res => {
+    alert("Note saved")
+    location.reload()
+  })
 };
 
 // A function for deleting a note from the db

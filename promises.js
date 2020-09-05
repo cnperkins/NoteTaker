@@ -49,10 +49,8 @@ promise_fail_function.then(res => {
 const get_all_promises = async () => {
     const promise_one = await promise_function
     const promise_two = await promise_fail_function.catch(err => console.log(err))
-
     console.log(promise_one, promise_two)
-}
+};
 
-get_all_promises()
 
 
