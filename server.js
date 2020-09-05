@@ -1,6 +1,7 @@
 var express = require("express");
 var path = require("path");
-var fs = require("fs");
+var fs = require("fs").promises;
+
 const db = require("./db.json");
 const { v4: uuidv4 } = require('uuid');
 
@@ -31,7 +32,7 @@ app.get("/api/notes", (req, res) => {
 
 // POST ______________________________________________
 
-app.post("/api/notes", (req, res) => {
+app.post("/api/notes", async (req, res) => {
 
     let noteId = uuidv4();
     let newNote = {
@@ -40,19 +41,15 @@ app.post("/api/notes", (req, res) => {
         text: req.body.text
     };
 
-    fs.readFile("./db.json", "utf8", (err, data) => {
-        if (err) throw err;
-
-        const allNotes = JSON.parse(data);
-
-        allNotes.push(newNote);
-
-        fs.writeFile("./db.json", JSON.stringify(allNotes, null, 2), err => {
-            if (err) throw err;
-            res.send(db);
-            console.log("Note created!")
-        });
-    });
+    const file_content = await fs.readFile("./db.json", "utf8").catch(err => console.log(err))
+    console.log(file_content)
+    const allNotes = JSON.parse(file_content);
+    allNotes.push(newNote);
+    const new_file = await fs.writeFile("./db.json", JSON.stringify(allNotes, null, 2))
+    console.log("Note created!")
+    const file_new = await fs.readFile("./db.json", "utf8")
+    console.log(file_new)
+    res.json(file_new)
 });
 
 // DELETE ______________________________________________
@@ -82,3 +79,6 @@ app.delete("/api/notes/:id", (req, res) => {
 app.listen(PORT, function () {
     console.log("App listening on PORT " + PORT);
 });
+
+
+// I think im missing module.exports = function(app) {}...notes arent deleting
